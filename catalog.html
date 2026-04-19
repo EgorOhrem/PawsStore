@@ -9,10 +9,21 @@
 <body data-page="catalog">
   <div id="app">
     <header id="site-header"></header>
-    <main class="container">
-      <h1>Каталог</h1>
-      <section id="catalog-filters"></section>
-      <section id="catalog-grid" class="grid"></section>
+    <main>
+      <section class="catalog-hero">
+        <div class="container">
+          <h1>Shop All Products</h1>
+          <p>Discover the best products for your furry friends</p>
+        </div>
+      </section>
+
+      <section class="container catalog-layout">
+        <aside id="catalog-filters" class="catalog-sidebar"></aside>
+        <section class="catalog-content">
+          <div id="catalog-toolbar" class="catalog-toolbar"></div>
+          <section id="catalog-grid" class="catalog-grid"></section>
+        </section>
+      </section>
     </main>
     <footer id="site-footer"></footer>
   </div>
