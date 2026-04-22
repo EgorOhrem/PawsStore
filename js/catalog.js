@@ -1,5 +1,5 @@
 import { products } from "./data.js";
-import { addToCart, getCart } from "./store.js";
+import { addToCart } from "./store.js";
 
 const state = {
   sort: "alphabet-asc",
@@ -12,8 +12,15 @@ const filtersRoot = document.querySelector("#catalog-filters");
 const grid = document.querySelector("#catalog-grid");
 const toolbar = document.querySelector("#catalog-toolbar");
 
-function isInCart(productId) {
-  return getCart().some((item) => item.id === productId);
+function formatPrice(price) {
+  return `$${Number(price).toFixed(2)}`;
+}
+
+function renderStars(rating) {
+  const value = Math.max(0, Math.min(5, Number(rating) || 0));
+  const filled = Math.round(value);
+  const empty = 5 - filled;
+  return "★".repeat(filled) + "☆".repeat(empty);
 }
 
 function getFilteredAndSortedProducts() {
@@ -138,20 +145,46 @@ function renderCatalog() {
   }
 
   grid.innerHTML = list.map((item) => {
+    const ctaLabel = "Add to cart";
     return `
       <article class="product-card">
-        <a href="./product.html?id=${item.id}" class="product-cover">
-          <span class="price-chip">$${item.price.toFixed(2)}</span>
+        <a href="./product.html?id=${item.id}" class="product-cover" aria-label="${item.title}">
           <img src="${item.images[0]}" alt="${item.title}">
+          <span class="price-chip">${formatPrice(item.price)}</span>
         </a>
+        <div class="product-overlay" aria-hidden="true">
+          <div class="product-overlay-inner">
+            <div class="product-overlay-top">
+              <div class="product-title">${item.title}</div>
+              <div class="product-meta">
+                <span class="stars" aria-hidden="true">${renderStars(item.rating)}</span>
+                <span class="product-rating">(${item.rating})</span>
+              </div>
+            </div>
+            <div class="product-overlay-bottom">
+              <div class="product-price">${formatPrice(item.price)}</div>
+            </div>
+          </div>
+        </div>
         <div class="product-body">
-          <a href="./product.html?id=${item.id}" class="product-title">${item.title}</a>
+          <a href="./product.html?id=${item.id}" class="product-title-link">${item.title}</a>
           <div class="product-meta">
-            <span class="stars">★★★★★</span>
+            <span class="stars" aria-hidden="true">${renderStars(item.rating)}</span>
             <span class="product-rating">(${item.rating})</span>
           </div>
-          <button class="btn add-to-cart" data-id="${item.id}">${isInCart(item.id) ? "Added" : "Add to cart"}</button>
         </div>
+        <button
+          class="product-cta"
+          type="button"
+          data-id="${item.id}"
+          aria-label="${ctaLabel}"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M3 4h2l2.1 10.2a1 1 0 0 0 1 .8h10.8a1 1 0 0 0 1-.8L22 7H7"></path>
+            <circle cx="10" cy="20" r="1.4"></circle>
+            <circle cx="18" cy="20" r="1.4"></circle>
+          </svg>
+        </button>
       </article>
     `;
   }).join("");
@@ -163,7 +196,7 @@ function renderCatalogView() {
 
 function bindCardActions() {
   document.addEventListener("click", (event) => {
-    const button = event.target.closest(".add-to-cart");
+    const button = event.target.closest(".product-cta");
     if (!button) return;
 
     const productId = button.dataset.id;
