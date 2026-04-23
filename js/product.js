@@ -29,12 +29,18 @@ function renderProductPage() {
 
   const related = products.filter((item) => item.id !== product.id).slice(0, 3);
   const breadcrumbs = ["Home", product.subtitle, product.title];
+  const breadcrumbLinks = ["./catalog.html", "./catalog.html", null];
 
   pageRoot.innerHTML = `
     <nav class="product-breadcrumbs">
-      ${breadcrumbs.map((crumb, index) => `
-        <span class="crumb ${index === breadcrumbs.length - 1 ? "is-active" : ""}">${crumb}</span>
-      `).join("<span class='crumb-sep'>›</span>")}
+      ${breadcrumbs.map((crumb, index) => {
+        const isLast = index === breadcrumbs.length - 1;
+        const href = breadcrumbLinks[index];
+        if (!isLast && href) {
+          return `<a class="crumb crumb-link" href="${href}">${crumb}</a>`;
+        }
+        return `<span class="crumb is-active">${crumb}</span>`;
+      }).join("<span class='crumb-sep'>›</span>")}
     </nav>
 
     <article class="product-layout">

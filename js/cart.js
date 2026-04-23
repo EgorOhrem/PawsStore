@@ -54,6 +54,10 @@ function renderEmpty() {
   `;
 }
 
+function cartStep(progress, label) {
+  return `<span class="step ${progress ? "is-active" : ""}">${label}</span>`;
+}
+
 function renderFilled() {
   const cart = getCart();
   const { subtotal, tax, shipping, discount, total, promoCode, qualified } = totals(cart);
@@ -61,25 +65,14 @@ function renderFilled() {
 
   root.innerHTML = `
     <section class="cart-head">
-      <div class="cart-head-text">
+      <div>
         <h1>Shopping Bag</h1>
         <p>${count} items ready for checkout</p>
       </div>
-      <div class="cart-steps" role="list" aria-label="Checkout progress">
-        <div class="cart-step is-active" role="listitem">
-          <span class="cart-step-badge" aria-hidden="true">1</span>
-          <span class="cart-step-label">Cart</span>
-        </div>
-        <span class="cart-step-chevron" aria-hidden="true">›</span>
-        <div class="cart-step" role="listitem">
-          <span class="cart-step-badge" aria-hidden="true">2</span>
-          <span class="cart-step-label">Checkout</span>
-        </div>
-        <span class="cart-step-chevron is-muted" aria-hidden="true">›</span>
-        <div class="cart-step" role="listitem">
-          <span class="cart-step-badge" aria-hidden="true">3</span>
-          <span class="cart-step-label">Complete</span>
-        </div>
+      <div class="cart-steps">
+        ${cartStep(true, "1 Cart")}
+        ${cartStep(false, "2 Checkout")}
+        ${cartStep(false, "3 Complete")}
       </div>
     </section>
 
