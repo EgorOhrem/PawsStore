@@ -1764,6 +1764,17 @@ body[data-page="about"] main {
   line-height: 1.6;
 }
 
+.about-wide-photo {
+  width: 100%;
+}
+
+.about-wide-photo img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  display: block;
+}
+
 .about-cta {
   padding: 56px 0;
 }
