@@ -7,6 +7,11 @@ const requestedId = searchParams.get("id");
 
 const product = products.find((item) => item.id === requestedId) || products[0];
 
+// вычисляем один раз — они не меняются
+const related = products.filter((item) => item.id !== product.id).slice(0, 3);
+const breadcrumbs = ["Home", product.subtitle, product.title];
+const breadcrumbLinks = ["./catalog.html", "./catalog.html", null];
+
 let activeImage = 0;
 let quantity = 1;
 
@@ -27,10 +32,6 @@ function starsMarkup(rating) {
 function renderProductPage() {
   if (!pageRoot || !product) return;
 
-  const related = products.filter((item) => item.id !== product.id).slice(0, 3);
-  const breadcrumbs = ["Home", product.subtitle, product.title];
-  const breadcrumbLinks = ["./catalog.html", "./catalog.html", null];
-
   pageRoot.innerHTML = `
     <nav class="product-breadcrumbs">
       ${breadcrumbs.map((crumb, index) => {
@@ -47,8 +48,16 @@ function renderProductPage() {
       <section class="product-media">
         <div class="product-media-main">
           <img src="${product.images[activeImage]}" alt="${product.title}">
-          <button type="button" class="media-arrow media-arrow-prev" data-role="prev-image" aria-label="Previous image">‹</button>
-          <button type="button" class="media-arrow media-arrow-next" data-role="next-image" aria-label="Next image">›</button>
+          <button type="button" class="media-arrow media-arrow-prev" data-role="prev-image" aria-label="Previous image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <button type="button" class="media-arrow media-arrow-next" data-role="next-image" aria-label="Next image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
         </div>
         <div class="media-dots">
           ${product.images.map((image, index) => `
@@ -181,7 +190,12 @@ function bindEvents() {
     }
   });
 
-  window.addEventListener("cart:updated", renderProductPage);
+  window.addEventListener("cart:updated", () => {
+    const addBtn = pageRoot?.querySelector('[data-role="add"]');
+    if (addBtn) {
+      addBtn.textContent = isInCart(product.id) ? "Add More to Cart" : "Add to Cart";
+    }
+  });
 }
 
 renderProductPage();

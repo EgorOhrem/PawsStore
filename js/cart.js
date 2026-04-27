@@ -58,8 +58,7 @@ function cartStep(progress, label) {
   return `<span class="step ${progress ? "is-active" : ""}">${label}</span>`;
 }
 
-function renderFilled() {
-  const cart = getCart();
+function renderFilled(cart) {
   const { subtotal, tax, shipping, discount, total, promoCode, qualified } = totals(cart);
   const count = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -126,16 +125,25 @@ function renderFilled() {
         </header>
         <div class="summary-body">
           <label>Promo Code</label>
-          <form id="promo-form" class="promo-row">
-            <input id="promo-input" type="text" placeholder="Enter code" value="" autocomplete="off">
-            <button type="submit">Apply</button>
-          </form>
-          ${
-            promoCode === PROMO_CODE
-              ? `<p class="promo-active">SAVE10 is applied. <button type="button" class="promo-remove" data-action="remove-promo">Remove</button></p>`
-              : ""
+          ${promoCode === PROMO_CODE
+            ? `<div class="promo-active">
+                <span class="promo-active-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                </span>
+                <div class="promo-active-text">
+                  <strong>${PROMO_CODE}</strong>
+                  <span>10% discount applied</span>
+                </div>
+                <button type="button" class="promo-remove" data-action="remove-promo" aria-label="Remove promo code">✕</button>
+              </div>`
+            : `<form id="promo-form" class="promo-row">
+                <input id="promo-input" type="text" placeholder="Enter code" value="" autocomplete="off">
+                <button type="submit">Apply</button>
+              </form>
+              <p id="promo-message" class="promo-message"></p>`
           }
-          <p id="promo-message" class="promo-message"></p>
 
           <div class="summary-line"><span>Subtotal</span><strong>$${subtotal.toFixed(2)}</strong></div>
           <div class="summary-line"><span>Tax (8%)</span><strong>$${tax.toFixed(2)}</strong></div>
@@ -162,11 +170,12 @@ function renderFilled() {
 
 function render() {
   if (!root) return;
-  if (!getCart().length) {
+  const cart = getCart();
+  if (!cart.length) {
     renderEmpty();
     return;
   }
-  renderFilled();
+  renderFilled(cart);
 }
 
 function bindEvents() {
@@ -206,21 +215,21 @@ function bindEvents() {
     const message = document.querySelector("#promo-message");
 
     if (!code) {
-      message.textContent = "Введите промокод";
+      message.textContent = "Enter the promo code";
       message.classList.add("is-error");
       return;
     }
 
     if (code === PROMO_CODE) {
       setPromoCode(code);
-      message.textContent = "Промокод применен: скидка 10%";
+      message.textContent = "Promo code is applied (discount 10%)";
       message.classList.remove("is-error");
       render();
       return;
     }
 
     setPromoCode("");
-    message.textContent = "Неверный промокод";
+    message.textContent = "Incorrect promo code";
     message.classList.add("is-error");
   });
 

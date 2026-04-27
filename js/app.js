@@ -1,6 +1,7 @@
+import { getCartCount } from "./store.js";
+
 const HEADER_PATH = "./components/header.html";
 const FOOTER_PATH = "./components/footer.html";
-import { getCartCount } from "./store.js";
 
 async function injectComponent(selector, path) {
   const target = document.querySelector(selector);
@@ -23,8 +24,27 @@ async function initLayout() {
   await injectComponent("#site-header", HEADER_PATH);
   await injectComponent("#site-footer", FOOTER_PATH);
   updateCartBadge();
+  initBurger();
   window.addEventListener("cart:updated", updateCartBadge);
   window.addEventListener("storage", updateCartBadge);
+}
+
+function initBurger() {
+  const btn = document.querySelector("#burger-btn");
+  const nav = document.querySelector("#main-nav");
+  if (!btn || !nav) return;
+
+  btn.addEventListener("click", () => {
+    const isOpen = nav.classList.toggle("is-open");
+    btn.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".header-inner")) {
+      nav.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+    }
+  });
 }
 
 initLayout();
