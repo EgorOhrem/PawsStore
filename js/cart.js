@@ -1,4 +1,5 @@
 import { getCart, saveCart } from "./store.js";
+import { showNotification } from "./notification.js";
 
 const TAX_RATE = 0.08;
 const PROMO_CODE = "SAVE10";
@@ -201,7 +202,10 @@ function bindEvents() {
 
     if (action === "inc") setQuantity(id, item.quantity + 1);
     if (action === "dec" && item.quantity > 1) setQuantity(id, item.quantity - 1);
-    if (action === "remove") removeItem(id);
+    if (action === "remove") {
+      showNotification(`Removed ${item.title} from cart`, "remove");
+      removeItem(id);
+    }
     render();
   });
 

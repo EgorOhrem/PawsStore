@@ -1,5 +1,6 @@
 import { products } from "./data.js";
 import { addToCart } from "./store.js";
+import { showNotification } from "./notification.js";
 
 const state = {
   sort: "alphabet-asc",
@@ -204,7 +205,8 @@ function bindCardActions() {
     if (!product) return;
 
     addToCart(product);
-    renderCatalogView();
+    showNotification(`Added ${product.title} to cart`);
+    renderCatalog();
   });
 
   window.addEventListener("cart:updated", renderCatalogView);

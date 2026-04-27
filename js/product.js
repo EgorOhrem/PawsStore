@@ -1,5 +1,6 @@
 import { products } from "./data.js";
 import { addToCart, getCart } from "./store.js";
+import { showNotification } from "./notification.js";
 
 const pageRoot = document.querySelector("#product-page");
 const searchParams = new URLSearchParams(window.location.search);
@@ -185,6 +186,7 @@ function bindEvents() {
       for (let i = 0; i < quantity; i += 1) {
         addToCart(product);
       }
+      showNotification(`Added ${quantity > 1 ? quantity + "x " : ""}${product.title} to cart`);
       quantity = 1;
       renderProductPage();
     }
